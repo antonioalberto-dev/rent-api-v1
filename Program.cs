@@ -1,4 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using RentApi.DTOs;
+using RentApi.Infra.Db;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<DbContextInfra>(options => {
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("mysql"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("mysql"))
+    );
+});
+
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
