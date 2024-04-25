@@ -12,6 +12,18 @@ public class DbContextInfra : DbContext
     }
     public DbSet<Admin> AdminUsers { get; set; } = default!;
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Admin>().HasData(
+            new Admin{
+                Id = 1,
+                Email = "adm@test.com",
+                Password = "123456",
+                Profile = "Adm"
+            }
+        );
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
