@@ -46,8 +46,29 @@ app.MapPost("/admin/login", ([FromBody] LoginDto user, IAdminService adminServic
 #endregion
 
 #region Vehicle
+
+ErrorValidations validationVehicle(VehicleDto vehicleDto)
+{
+    var errorValidationMessages = new ErrorValidations
+    {
+        Messages = new List<string>()
+    };
+
+    if (string.IsNullOrEmpty(vehicleDto.Desc))
+        errorValidationMessages.Messages.Add("Precisa ser informado o modelo do veículo.");
+    if (string.IsNullOrEmpty(vehicleDto.Brand))
+        errorValidationMessages.Messages.Add("Precisa ser informada a marca do veículo.");
+    if (vehicleDto.Year < 1950)
+        errorValidationMessages.Messages.Add("Veículo muito antigo! Somente aceito os veículos com ano acima de 1950.");
+
+    return errorValidationMessages;
+}
+
 app.MapPost("/vehicles", ([FromBody] VehicleDto vehicleDto, IVehicleService vehicleService) =>
 {
+    var validation = validationVehicle(vehicleDto);
+    if (validation.Messages.Count > 0) return Results.BadRequest(validation);
+
     var vehicle = new Vehicle
     {
         Desc = vehicleDto.Desc,
@@ -79,6 +100,10 @@ app.MapGet("/vehicles/{id}", ([FromQuery] int id, IVehicleService vehicleService
 
 app.MapPut("/vehicles/{id}", ([FromRoute] int id, VehicleDto vehicleDto, IVehicleService vehicleService) =>
 {
+
+    var validation = validationVehicle(vehicleDto);
+    if (validation.Messages.Count > 0) return Results.BadRequest(validation);
+
     var vehicle = vehicleService.VehicleId(id);
     if (vehicle == null) return Results.NotFound("Veículo não encontrado");
 
