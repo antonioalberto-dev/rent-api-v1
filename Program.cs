@@ -17,6 +17,9 @@ builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContext<DbContextInfra>(options =>
 {
     options.UseMySql(
@@ -128,6 +131,9 @@ app.MapDelete("/vehicles/{id}", ([FromRoute] int id, IVehicleService vehicleServ
 #endregion
 
 #region App
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseSwagger();
 app.UseSwaggerUI();
