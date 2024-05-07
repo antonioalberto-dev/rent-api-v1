@@ -20,14 +20,14 @@ public class VehicleService : IVehicleService
         _context.SaveChanges();
     }
 
-    public List<Vehicle> AllVehicles(int page = 1, string? desc = null, string? brand = null)
+    public List<Vehicle> AllVehicles(int? page = 1, string? desc = null, string? brand = null)
     {
         var query = _context.Vehicles.AsQueryable();
         if (!string.IsNullOrEmpty(desc))
             query = query.Where(v => EF.Functions.Like(v.Desc.ToLower(), $"%{desc}%"));
 
-
-        query = query.Skip((page - 1) * 10).Take(10);
+        if (page != null)
+            query = query.Skip(((int)page - 1) * 10).Take(10);
 
         return query.ToList();
     }

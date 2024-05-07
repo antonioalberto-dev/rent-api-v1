@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RentApi.Infra.Db;
 
@@ -10,9 +11,11 @@ using RentApi.Infra.Db;
 namespace RentApi.Migrations
 {
     [DbContext(typeof(DbContextInfra))]
-    partial class DbContextInfraModelSnapshot : ModelSnapshot
+    [Migration("20240507033856_VehicleMigrations")]
+    partial class VehicleMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +49,7 @@ namespace RentApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admin");
+                    b.ToTable("AdminUsers");
 
                     b.HasData(
                         new
