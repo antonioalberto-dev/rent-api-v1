@@ -10,6 +10,7 @@ public class DbContextInfra : DbContext
     {
         _configurationAppSettings = configurationAppSettings;
     }
+    public DbSet<Vehicle> Vehicles { get; set; } = default!;
     public DbSet<Admin> AdminUsers { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

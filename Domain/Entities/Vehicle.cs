@@ -3,21 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RentApi.Domain.Entities;
 
-public class Admin
+public class Vehicle
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     [Required]
-    [StringLength(255)]
-    public string? Email { get; set; }
+    [StringLength(150)]
+    public string? Desc { get; set; }
+
+    [StringLength(100)]
+    public string? Brand { get; set; }
 
     [Required]
-    [StringLength(50)]
-    public string? Password { get; set; }
-
-    [Required]
-    [StringLength(10)]
-    public string? Profile { get; set; }
+    public int Year { get; set; }
 }
