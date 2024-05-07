@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinimalApi.Domain.Services;
 using RentApi.Domain.Interfaces;
+using RentApi.Domain.ModelViews;
 using RentApi.DTOs;
 using RentApi.Infra.Db;
 
@@ -22,7 +23,7 @@ builder.Services.AddDbContext<DbContextInfra>(options =>
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => Results.Json(new Home()));
 
 app.MapPost("/login", ([FromBody] LoginDto user, IAdminService adminService) =>
 {
