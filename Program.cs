@@ -48,7 +48,8 @@ app.MapPost("/admin/login", ([FromBody] LoginDto user, IAdminService adminServic
 #region Vehicle
 app.MapPost("/vehicles", ([FromBody] VehicleDto vehicleDto, IVehicleService vehicleService) =>
 {
-    var vehicle = new Vehicle{
+    var vehicle = new Vehicle
+    {
         Desc = vehicleDto.Desc,
         Brand = vehicleDto.Brand,
         Year = vehicleDto.Year
@@ -62,7 +63,42 @@ app.MapGet("/vehicles", ([FromQuery] int? page, IVehicleService vehicleService) 
 {
     var vehicles = vehicleService.AllVehicles(page);
 
+    if (vehicles.Count == 0) return Results.Ok("Sem veículos cadastrados");
+
     return Results.Ok(vehicles);
+}).WithTags("Vehicles");
+
+app.MapGet("/vehicles/{id}", ([FromQuery] int id, IVehicleService vehicleService) =>
+{
+    var vehicle = vehicleService.VehicleId(id);
+
+    if (vehicle == null) return Results.NotFound("Veículo não encontrado");
+
+    return Results.Ok(vehicle);
+}).WithTags("Vehicles");
+
+app.MapPut("/vehicles/{id}", ([FromRoute] int id, VehicleDto vehicleDto, IVehicleService vehicleService) =>
+{
+    var vehicle = vehicleService.VehicleId(id);
+    if (vehicle == null) return Results.NotFound("Veículo não encontrado");
+
+    vehicle.Desc = vehicleDto.Desc;
+    vehicle.Brand = vehicleDto.Brand;
+    vehicle.Year = vehicleDto.Year;
+
+    vehicleService.UpdateVehicle(vehicle);
+
+    return Results.Ok(vehicle);
+}).WithTags("Vehicles");
+
+app.MapDelete("/vehicles/{id}", ([FromRoute] int id, IVehicleService vehicleService) =>
+{
+    var vehicle = vehicleService.VehicleId(id);
+    if (vehicle == null) return Results.NotFound("Veículo não encontrado");
+
+    vehicleService.DeleteVehicle(vehicle);
+
+    return Results.Ok("Os dados do veículo foram deletados");
 }).WithTags("Vehicles");
 #endregion
 
