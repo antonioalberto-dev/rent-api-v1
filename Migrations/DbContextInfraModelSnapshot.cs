@@ -46,7 +46,7 @@ namespace RentApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admin");
+                    b.ToTable("AdminUsers");
 
                     b.HasData(
                         new
@@ -56,6 +56,31 @@ namespace RentApi.Migrations
                             Password = "123456",
                             Profile = "Adm"
                         });
+                });
+
+            modelBuilder.Entity("RentApi.Domain.Entities.Vehicle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Brand")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Desc")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vehicles");
                 });
 #pragma warning restore 612, 618
         }
