@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using MinimalApi.Domain.Services;
 using RentApi.Domain.Entities;
 using RentApi.Domain.Interfaces;
@@ -42,12 +41,12 @@ app.MapPost("/admin/login", ([FromBody] LoginDto user, IAdminService adminServic
     if (adminService.Login(user) != null)
         return Results.Ok("Login realizado com sucesso");
     return Results.Unauthorized();
-});
+}).WithTags("Admin");
 
 #endregion
 
 #region Vehicle
-app.MapPost("/vehicle", ([FromBody] VehicleDto vehicleDto, IVehicleService vehicleService) =>
+app.MapPost("/vehicles", ([FromBody] VehicleDto vehicleDto, IVehicleService vehicleService) =>
 {
     var vehicle = new Vehicle{
         Desc = vehicleDto.Desc,
@@ -57,7 +56,14 @@ app.MapPost("/vehicle", ([FromBody] VehicleDto vehicleDto, IVehicleService vehic
     vehicleService.AddVehicle(vehicle);
 
     return Results.Created($"/vehicle/{vehicle.Id}", vehicle);
-});
+}).WithTags("Vehicles");
+
+app.MapGet("/vehicles", ([FromQuery] int? page, IVehicleService vehicleService) =>
+{
+    var vehicles = vehicleService.AllVehicles(page);
+
+    return Results.Ok(vehicles);
+}).WithTags("Vehicles");
 #endregion
 
 #region App
