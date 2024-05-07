@@ -9,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IAdminService, AdminService>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContext<DbContextInfra>(options =>
 {
     options.UseMySql(
@@ -27,5 +30,8 @@ app.MapPost("/login", ([FromBody] LoginDto user, IAdminService adminService) =>
         return Results.Ok("Login realizado com sucesso");
     return Results.Unauthorized();
 });
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();

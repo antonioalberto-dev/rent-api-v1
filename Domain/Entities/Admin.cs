@@ -11,13 +11,13 @@ public class Admin
 
     [Required]
     [StringLength(255)]
-    public string Email { get; set; }
+    public string? Email { get; set; }
 
     [Required]
     [StringLength(50)]
-    public string Password { get; set; }
+    public string? Password { get; set; }
 
     [Required]
     [StringLength(10)]
-    public string Profile { get; set; }
+    public string? Profile { get; set; }
 }
