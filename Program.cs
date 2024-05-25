@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinimalApi.Domain.Services;
 using RentApi.Domain.Entities;
+using RentApi.Domain.Enuns;
 using RentApi.Domain.Interfaces;
 using RentApi.Domain.ModelViews;
 using RentApi.DTOs;
@@ -44,6 +45,68 @@ app.MapPost("/admin/login", ([FromBody] LoginDto user, IAdminService adminServic
     if (adminService.Login(user) != null)
         return Results.Ok("Login realizado com sucesso");
     return Results.Unauthorized();
+}).WithTags("Admin");
+
+app.MapPost("/admin", ([FromBody] AdminDto adminDto, IAdminService adminService) =>
+{
+    var validation = new ErrorValidations
+    {
+        Messages = new List<string>()
+    };
+
+    if (string.IsNullOrEmpty(adminDto.Email)) validation.Messages.Add("Email não pode ser vazio!");
+    if (string.IsNullOrEmpty(adminDto.Password)) validation.Messages.Add("Senha não pode estar em branco!");
+    if (adminDto.Profile.ToString() == null) validation.Messages.Add("O Perfil deve ser informado!");
+
+    if (validation.Messages.Count > 0) return Results.BadRequest(validation);
+
+    var admin = new Admin
+    {
+        Email = adminDto.Email,
+        Password = adminDto.Password,
+        Profile = adminDto.Profile.ToString() ?? Perfil.Editor.ToString()
+    };
+
+    adminService.Insert(admin);
+
+    return Results.Created($"/admin/{admin.Id}", new AdminModelView
+    {
+        Id = admin.Id,
+        Email = admin.Email ?? "",
+        Profile = admin.Profile ?? "",
+    });
+}).WithTags("Admin");
+
+app.MapGet("/admin/all", ([FromQuery] int? page, IAdminService adminService) =>
+{
+    var adms = new List<AdminModelView>();
+    var allAdmin = adminService.ViewAll(page);
+
+    foreach (var admin in allAdmin)
+    {
+        adms.Add(new AdminModelView
+        {
+            Id = admin.Id,
+            Email = admin.Email ?? "",
+            Profile = admin.Profile ?? "",
+        });
+    }
+
+    return Results.Ok(adms);
+}).WithTags("Admin");
+
+app.MapGet("/admin/{id}", ([FromQuery] int id, IAdminService adminService) =>
+{
+    var admin = adminService.SearchAdmin(id);
+
+    if (admin == null) return Results.NotFound("Admin não encontrado");
+
+    return Results.Ok(new AdminModelView
+    {
+        Id = admin.Id,
+        Email = admin.Email ?? "",
+        Profile = admin.Profile ?? "",
+    });
 }).WithTags("Admin");
 
 #endregion
