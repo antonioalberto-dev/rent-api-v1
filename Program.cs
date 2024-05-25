@@ -46,6 +46,43 @@ app.MapPost("/admin/login", ([FromBody] LoginDto user, IAdminService adminServic
     return Results.Unauthorized();
 }).WithTags("Admin");
 
+app.MapPost("/admin", ([FromBody] AdminDto adminDto, IAdminService adminService) =>
+{
+    var validation = new ErrorValidations
+    {
+        Messages = new List<string>()
+    };
+
+    if (string.IsNullOrEmpty(adminDto.Email)) validation.Messages.Add("Email não pode ser vazio!");
+    if (string.IsNullOrEmpty(adminDto.Password)) validation.Messages.Add("Senha não pode estar em branco!");
+    if (adminDto.Profile.ToString() == null) validation.Messages.Add("O Perfil deve ser informado!");
+
+    if (validation.Messages.Count > 0) return Results.BadRequest(validation);
+
+    var admin = new Admin
+    {
+        Email = adminDto.Email,
+        Password = adminDto.Password,
+        Profile = adminDto.Profile.ToString()
+    };
+
+    return Results.Created($"/admin/{admin.Id}", admin);
+}).WithTags("Admin");
+
+app.MapGet("/admin/all", ([FromQuery] int? page, IAdminService adminService) =>
+{
+    return Results.Ok(adminService.ViewAll(page));
+}).WithTags("Admin");
+
+app.MapGet("/admin/{id}", ([FromQuery] int id, IAdminService adminService) =>
+{
+    var admin = adminService.SearchAdmin(id);
+
+    if (admin == null) return Results.NotFound("Admin não encontrado");
+
+    return Results.Ok(admin);
+}).WithTags("Admin");
+
 #endregion
 
 #region Vehicle
