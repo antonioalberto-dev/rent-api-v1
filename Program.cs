@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinimalApi.Domain.Services;
 using RentApi.Domain.Entities;
+using RentApi.Domain.Enuns;
 using RentApi.Domain.Interfaces;
 using RentApi.Domain.ModelViews;
 using RentApi.DTOs;
@@ -63,15 +64,35 @@ app.MapPost("/admin", ([FromBody] AdminDto adminDto, IAdminService adminService)
     {
         Email = adminDto.Email,
         Password = adminDto.Password,
-        Profile = adminDto.Profile.ToString()
+        Profile = adminDto.Profile.ToString() ?? Perfil.Editor.ToString()
     };
 
-    return Results.Created($"/admin/{admin.Id}", admin);
+    adminService.Insert(admin);
+
+    return Results.Created($"/admin/{admin.Id}", new AdminModelView
+    {
+        Id = admin.Id,
+        Email = admin.Email ?? "",
+        Profile = admin.Profile ?? "",
+    });
 }).WithTags("Admin");
 
 app.MapGet("/admin/all", ([FromQuery] int? page, IAdminService adminService) =>
 {
-    return Results.Ok(adminService.ViewAll(page));
+    var adms = new List<AdminModelView>();
+    var allAdmin = adminService.ViewAll(page);
+
+    foreach (var admin in allAdmin)
+    {
+        adms.Add(new AdminModelView
+        {
+            Id = admin.Id,
+            Email = admin.Email ?? "",
+            Profile = admin.Profile ?? "",
+        });
+    }
+
+    return Results.Ok(adms);
 }).WithTags("Admin");
 
 app.MapGet("/admin/{id}", ([FromQuery] int id, IAdminService adminService) =>
@@ -80,7 +101,12 @@ app.MapGet("/admin/{id}", ([FromQuery] int id, IAdminService adminService) =>
 
     if (admin == null) return Results.NotFound("Admin não encontrado");
 
-    return Results.Ok(admin);
+    return Results.Ok(new AdminModelView
+    {
+        Id = admin.Id,
+        Email = admin.Email ?? "",
+        Profile = admin.Profile ?? "",
+    });
 }).WithTags("Admin");
 
 #endregion
